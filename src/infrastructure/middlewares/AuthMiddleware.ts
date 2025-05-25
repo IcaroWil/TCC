@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 
 export function AuthMiddleware(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
-
   if (!authHeader) {
     res.status(401).send("Token não fornecido");
     return;

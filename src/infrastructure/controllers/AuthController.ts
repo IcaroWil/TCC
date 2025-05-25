@@ -11,7 +11,7 @@ export class AuthController {
       const { email, password } = req.body;
       const useCase = new CreateUser(userRepo);
       await useCase.execute(email, password);
-      res.status(201).send("Usuário criado com sucesso!");
+      res.status(201).send("Usuário cadastrado");
     } catch (err: any) {
       res.status(400).send(err.message);
     }
@@ -24,7 +24,7 @@ export class AuthController {
       const token = await useCase.execute(email, password);
       res.json({ token });
     } catch (err: any) {
-      res.status(400).send(err.message);
+      res.status(401).send(err.message);
     }
   }
 }
