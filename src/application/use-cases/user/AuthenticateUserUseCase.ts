@@ -1,5 +1,6 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import { IAuthService } from "../../../domain/services/IAuthService";
+import { AppError } from "../../../shared/errors/AppError";
 import { AuthenticateUserDTO, AuthenticateUserResponseDTO } from "../../dtos/CreateUserDTO";
 import { IUseCase } from "../../interfaces/IUseCase";
 

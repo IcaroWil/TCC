@@ -3,6 +3,7 @@ import { IAppointmentRepository } from "../../../domain/repositories/IAppointmen
 import { IServiceRepository } from "../../../domain/repositories/IServiceRepository";
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import { INotificationService } from "../../../domain/services/INotificationService";
+import { AppError } from "../../../shared/errors/AppError";
 import { AppointmentResponseDTO, CreateAppointmentDTO } from "../../dtos/CreateAppointmentDTO";
 import { IUseCase } from "../../interfaces/IUseCase";
 
