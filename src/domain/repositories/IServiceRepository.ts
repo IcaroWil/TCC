@@ -6,6 +6,6 @@ export interface IServiceRepository {
     findByEstablishment(establishmentId: string): Promise<Service[]>;
     findActiveByEstablishment(establihmentId: string): Promise<Service[]>;
     update(service: Service): Promise<Service>;
-    delete(id: string): Promise<void>
-    list(page: number, limit: number): Promise<{services: Service[], total: number}>
+    delete(id: string): Promise<void>;
+    list(page: number, limit: number): Promise<{services: Service[], total: number}>;
 }
