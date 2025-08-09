@@ -1,0 +1,147 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id              String      @id @default(uuid())
+    email           String      @unique
+    password        String
+    name            String
+    phone           String
+    role            UserRole
+    establishmentId String?     @map("establishment_id")
+    createdAt       DateTime    @defautl(now()) @map("created_at")
+    updateAt        DateTime    @updateAt @map("updated_at")
+
+    establishment           Establishment?  @relation(fields: [establishmentId], references: [id])
+    clientAppointments      Appointment[]   @relation("ClientAppointments")
+    employeeAppointments    Appointment[]   @relation("EmployeeAppointments")
+
+    @@map("users")
+}
+
+model Establishment {
+    id         String   @id @default(uuid())
+    name       String
+    email      String   @unique
+    phone      String
+    address    String
+    city       String
+    state      String
+    zipCode    String   @map("zip_code")
+    cnpj       String   @unique
+    isActive   Boolean  @default(true) @map("is_active")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    users        User[]
+    services     Service[]
+    appointments Appointment[]
+
+    @@map("establishments")
+}
+
+// src/infrastructure/database/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  password        String
+  name            String
+  phone           String
+  role            UserRole
+  establishmentId String?   @map("establishment_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  establishment     Establishment? @relation(fields: [establishmentId], references: [id])
+  clientAppointments Appointment[] @relation("ClientAppointments")
+  employeeAppointments Appointment[] @relation("EmployeeAppointments")
+
+  @@map("users")
+}
+
+model Establishment {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  address   String
+  city      String
+  state     String
+  zipCode   String   @map("zip_code")
+  cnpj      String   @unique
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users        User[]
+  services     Service[]
+  appointments Appointment[]
+
+  @@map("establishments")
+}
+
+model Service {
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  duration        Int
+  price           Decimal  @db.Decimal(10, 2)
+  establishmentId String   @map("establishment_id")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+  appointments  Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id              String            @id @default(uuid())
+  clientId        String            @map("client_id")
+  serviceId       String            @map("service_id")
+  establishmentId String            @map("establishment_id")
+  employeeId      String            @map("employee_id")
+  scheduledAt     DateTime          @map("scheduled_at")
+  status          AppointmentStatus @default(SCHEDULED)
+  notes           String?
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  client        User          @relation("ClientAppointments", fields: [clientId], references: [id])
+  employee      User          @relation("EmployeeAppointments", fields: [employeeId], references: [id])
+  service       Service       @relation(fields: [serviceId], references: [id])
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+
+  @@map("appointments")
+}
+
+enum UserRole {
+    CLIENT
+    ADMIN
+    EMPLOYEE
+}
+
+enum AppointmentStatus {
+    SCHEDULED
+    CONFIRMED
+    IN_PROGRESS
+    COMPLETED
+    CANCELLED
+}
