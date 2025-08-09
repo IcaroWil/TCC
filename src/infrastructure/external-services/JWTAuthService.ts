@@ -7,13 +7,13 @@ export class JWTAuthService implements IAuthService {
     private readonly jwtExpiration: string;
 
     constructor() {
-        this.jwtSecret = process.env.JWT_SCRET || 'Minha chave';
+        this.jwtSecret = process.env.JWT_SECRET;
         this.jwtExpiration = process.env.JWT_EXPIRATION || '24';
     }
 
     async generateToken(userId: string): Promise<string> {
         return jwt.sign({ userId }, this.jwtSecret, {
-            epxpiresIn : this.jwtExpiration,
+            expiresIn: this.jwtExpiration,
         });
     }
 
