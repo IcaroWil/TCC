@@ -5,7 +5,7 @@ export class User {
         public readonly name: string,
         public readonly phone: string,
         public readonly role: 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
-        public readonly establihmentId?: string,
+        public readonly establishmentId?: string,
         public readonly createdAt: Date = new Date(),
         public readonly updatedAt: Date = new Date()
     ) {}

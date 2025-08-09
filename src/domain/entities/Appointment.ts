@@ -18,7 +18,7 @@ export class Appointment {
         clientId: string;
         serviceId: string;
         establishmentId: string;
-        employeedId: string;
+        employeeId: string;
         scheduledAt: Date;
         note?: string;
     }): Appointment {
@@ -28,7 +28,7 @@ export class Appointment {
             props.clientId,
             props.serviceId,
             props.establishmentId,
-            props.employeedId,
+            props.employeeId,
             props.scheduledAt,
             'SCHEDULED',
             props.note
