@@ -12,7 +12,7 @@ export const env = {
     // Email service
     emailService: {
         host: process.env.EMAIL_HOST,
-        port: parseInt(process.env.EMAIL_PORT),
+        port: parseInt(process.env.PORT || '3000'),
         user: process.env.EMAIL_USER,
         password: process.env.EMAIL_PASSWORD,
     },

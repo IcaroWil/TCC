@@ -68,5 +68,75 @@ export class PrismaUserRepository implements IUserRepository {
         );
     }
 
+    async findByEstablishment(establishmentId: string): Promise<User[]> {
+        const users = await this.prisma.user.findMany({
+            where: { establishmentId },
+        });
+
+        return users.map(user => new User(
+            user.id,
+            user.email,
+            user.name,
+            user.phone,
+            user.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
+            user.establishmentId || undefined,
+            user.createdAt,
+            user.updatedAt
+        ));
+    }
+
+    async update(user: User): Promise<User> {
+        const updated = await this.prisma.user.update({
+            where: { id: user.id };
+            data: {
+                name: user.name,
+                phone: user.phone,
+                role: user.role,
+                establishmentId: user.establishmentId,
+            },
+        });
+
+        return new User(
+            updated.id,
+            updated.email,
+            updated.name,
+            updated.phone,
+            updated.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
+            updated.establishmentId || undefined,
+            updated.createdAt,
+            updated.updatedAt
+        );
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.prisma.user.delete({
+            where: { id },
+        });
+    }
+
+    async list(page: number, limit: number): Promise<{users: User[], total: number}> {
+        const [users, total] = await Promise.all([
+          this.prisma.user.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+          }),
+          this.prisma.user.count(),
+        ]);
+
+        return {
+            users: users.map(user => new User(
+              user.id,
+              user.email,
+              user.name,
+              user.phone,
+              user.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
+              user.establishmentId || undefined,
+              user.createdAt,
+              user.updatedAt
+            )),
+            total,
+        };
+    }
     
 }
