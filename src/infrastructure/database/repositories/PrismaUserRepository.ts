@@ -13,7 +13,7 @@ export class PrismaUserRepository implements IUserRepository {
                 name: user.name,
                 phone: user.phone,
                 role: user.role,
-                establishmentId: user.establihmentId,
+                establishmentId: user.establishmentId,
                 password: '',
             },
         });
@@ -43,7 +43,7 @@ export class PrismaUserRepository implements IUserRepository {
             user.name,
             user.phone,
             user.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
-            user.establihmentId || undefined,
+            user.establishmentId || undefined,
             user.createdAt,
             user.updatedAt
         );
@@ -62,7 +62,7 @@ export class PrismaUserRepository implements IUserRepository {
             user.name,
             user.phone,
             user.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
-            user.establihmentId || undefined,
+            user.establishmentId || undefined,
             user.createdAt,
             user.updatedAt
         );

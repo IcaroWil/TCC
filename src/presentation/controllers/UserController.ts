@@ -29,7 +29,7 @@ export class UserController {
                     email: user.email,
                     phone: user.phone,
                     role: user.role,
-                    establishmentId: user.establihmentId,
+                    establishmentId: user.establishmentId,
                     createdAt: user.createdAt,
                 },
             });
@@ -89,7 +89,7 @@ export class UserController {
                     name: user.name,
                     phone: user.phone,
                     role: user.role,
-                    establishmentId: user.establihmentId,
+                    establishmentId: user.establishmentId,
                 },
             });
         } catch (error) {
