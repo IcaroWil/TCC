@@ -5,7 +5,7 @@ import { User } from '../../../domain/entities/User';
 export class PrismaUserRepository implements IUserRepository {
     constructor(private readonly prisma: PrismaClient) {}
 
-    async create(user: User): Promise<User> {
+    async create(user: User, hashedPassword: string): Promise<User> {
         const created = await this.prisma.user.create({
             data: {
                 id: user.id,
@@ -14,11 +14,11 @@ export class PrismaUserRepository implements IUserRepository {
                 phone: user.phone,
                 role: user.role,
                 establishmentId: user.establishmentId,
-                password: '',
+                password: hashedPassword,
             },
         });
 
-        return new User(      
+        return new User(
             created.id,
             created.email,
             created.name,
@@ -73,7 +73,7 @@ export class PrismaUserRepository implements IUserRepository {
             where: { establishmentId },
         });
 
-        return users.map(user => new User(
+        return users.map((user: any) => new User(
             user.id,
             user.email,
             user.name,
@@ -87,7 +87,7 @@ export class PrismaUserRepository implements IUserRepository {
 
     async update(user: User): Promise<User> {
         const updated = await this.prisma.user.update({
-            where: { id: user.id };
+            where: { id: user.id },
             data: {
                 name: user.name,
                 phone: user.phone,
@@ -125,7 +125,7 @@ export class PrismaUserRepository implements IUserRepository {
         ]);
 
         return {
-            users: users.map(user => new User(
+            users: users.map((user: any) => new User(
               user.id,
               user.email,
               user.name,
@@ -137,6 +137,27 @@ export class PrismaUserRepository implements IUserRepository {
             )),
             total,
         };
+    }
+
+    async findByEmailWithPassword(email: string): Promise<(User & { password: string }) | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+
+        if (!user) return null;
+
+        const userEntity = new User(
+            user.id,
+            user.email,
+            user.name,
+            user.phone,
+            user.role as 'CLIENT' | 'ADMIN' | 'EMPLOYEE',
+            user.establishmentId || undefined,
+            user.createdAt,
+            user.updatedAt
+        );
+
+        return Object.assign(userEntity, { password: user.password });
     }
     
 }

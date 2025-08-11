@@ -7,7 +7,7 @@ export class EmailNotificationService implements INotificationService {
     private transporter: nodemailer.Transporter;
 
     constructor() {
-        this.transporter = nodemailer.createTransporter({
+        this.transporter = nodemailer.createTransport({
             host: env.emailService.host,
             port: env.emailService.port,
             secure: false,
@@ -19,7 +19,7 @@ export class EmailNotificationService implements INotificationService {
     }
 
     async sendEmail(to: string, subject: string, body: string): Promise<void> {
-        await this.transporter.sendEmail({
+        await this.transporter.sendMail({
             from: env.emailService.user,
             to,
             subject,
@@ -35,11 +35,24 @@ export class EmailNotificationService implements INotificationService {
     async sendAppointmentConfirmation(appointment: Appointment, clientEmail: string): Promise<void> {
         const subject = 'Agendamento Confirmado';
         const body = `
-            <h2>Seu agendamento foi confirmado!<h2>
-            <p><strong>Horário:</strong> ${appointment.scheduledAt.toLocaleDateString('pt-BR')}<p>
+            <h2>Seu agendamento foi confirmado!</h2>
+            <p><strong>Horário:</strong> ${appointment.scheduledAt.toLocaleDateString('pt-BR')}</p>
             <p><strong>ID do Agendamento:</strong> ${appointment.id}</p>
             ${appointment.notes ? `<p><strong>Observações:</strong> ${appointment.notes}</p>` : ''}
             <p>Agradecemos pela preferência!</p>
+        `;
+
+        await this.sendEmail(clientEmail, subject, body);
+    }
+
+    async sendAppointmentReminder(appointment: Appointment, clientEmail: string): Promise<void> {
+        const subject = 'Lembrete de Agendamento';
+        const body = `
+            <h2>Lembrete: Você tem um agendamento hoje!</h2>
+            <p><strong>Horário:</strong> ${appointment.scheduledAt.toLocaleDateString('pt-BR')}</p>
+            <p><strong>ID do Agendamento:</strong> ${appointment.id}</p>
+            ${appointment.notes ? `<p><strong>Observações:</strong> ${appointment.notes}</p>` : ''}
+            <p>Não se esqueça do seu horário!</p>
         `;
 
         await this.sendEmail(clientEmail, subject, body);

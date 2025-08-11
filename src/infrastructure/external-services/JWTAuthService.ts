@@ -1,6 +1,6 @@
 import { IAuthService } from "../../domain/services/IAuthService";
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs';
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 export class JWTAuthService implements IAuthService {
     private readonly jwtSecret: string;
@@ -13,8 +13,8 @@ export class JWTAuthService implements IAuthService {
 
     async generateToken(userId: string): Promise<string> {
         return jwt.sign({ userId }, this.jwtSecret, {
-            expiresIn: this.jwtExpiration,
-        }); 
+            expiresIn: '24h',
+        });
     }
 
     async verifyToken(token: string): Promise<{ userId: string } | null> {

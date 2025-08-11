@@ -11,24 +11,24 @@ export class AuthenticateUserUseCase implements IUseCase<AuthenticateUserDTO, Au
     ) {}
 
     async execute(request: AuthenticateUserDTO): Promise<AuthenticateUserResponseDTO> {
-        const user = await this.userRepository.findByEmail(request.email);
-        if (!user) {
+        const userWithPassword = await this.userRepository.findByEmailWithPassword(request.email);
+        if (!userWithPassword) {
             throw new AppError('Invalid credentials', 401);
         }
 
-        const isValidPassword = await this.authService.comparePassword(request.password, user.password);
-        if (!isValidPassword) { 
+        const isValidPassword = await this.authService.comparePassword(request.password, userWithPassword.password);
+        if (!isValidPassword) {
             throw new AppError('Invalid credentials', 401);
         }
 
-        const token = await this.authService.generateToken(user.id);
+        const token = await this.authService.generateToken(userWithPassword.id);
 
         return {
             user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role
+                id: userWithPassword.id,
+                email: userWithPassword.email,
+                name: userWithPassword.name,
+                role: userWithPassword.role
             },
             token
         };

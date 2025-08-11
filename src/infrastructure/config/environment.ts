@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const env = {
-    port: process.env.PORT,
+    port: parseInt(process.env.PORT || '3000'),
     nodeEnv: process.env.NODE_ENV,
     databaseUrl: process.env.DATABASE_URL,
     jwtSecret: process.env.JWT_SECRET,
@@ -12,7 +12,7 @@ export const env = {
     // Email service
     emailService: {
         host: process.env.EMAIL_HOST,
-        port: parseInt(process.env.PORT || '3000'),
+        port: parseInt(process.env.EMAIL_PORT || '587'),
         user: process.env.EMAIL_USER,
         password: process.env.EMAIL_PASSWORD,
     },

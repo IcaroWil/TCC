@@ -1,3 +1,5 @@
+import { AppError } from "../../shared/errors/AppError";
+
 export type AppointmentStatus = 'SCHEDULED' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export class Appointment {
@@ -37,7 +39,7 @@ export class Appointment {
 
     confirm(): Appointment {
         if (this.status !== 'SCHEDULED') {
-            throw new Error('Only scheduled appointments can be confirmed');
+            throw new AppError('Only scheduled appointments can be confirmed', 400);
         }
 
         return new Appointment(
@@ -56,7 +58,7 @@ export class Appointment {
 
     cancel(): Appointment {
         if (this.status === 'COMPLETED' || this.status === 'CANCELLED') {
-            throw new Error('Cannot cancel completed or already cancelled appointments');
+            throw new AppError('Cannot cancel completed or already cancelled appointments', 400);
         }
 
         return new Appointment(
@@ -75,7 +77,7 @@ export class Appointment {
 
     complete(): Appointment {
         if (this.status !== 'IN_PROGRESS') {
-            throw new Error('Only appointments in progress can be completed');
+            throw new AppError('Only appointments in progress can be completed', 400);
         }
 
         return new Appointment(

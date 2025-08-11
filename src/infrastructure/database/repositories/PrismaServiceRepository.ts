@@ -57,7 +57,7 @@ export class PrismaServiceRepository implements IServiceRepository {
             orderBy: { name: 'asc' },
         });
 
-        return services.map(service => new Service(
+        return services.map((service: any) => new Service(
             service.id,
             service.name,
             service.description,
@@ -79,7 +79,7 @@ export class PrismaServiceRepository implements IServiceRepository {
             orderBy: { name: 'asc' },
         });
 
-        return services.map(service => new Service(
+        return services.map((service: any) => new Service(
             service.id,
             service.name,
             service.description,
@@ -134,7 +134,7 @@ export class PrismaServiceRepository implements IServiceRepository {
         ]);
 
         return {
-            services: services.map(service => new Service(
+            services: services.map((service: any) => new Service(
                 service.id,
                 service.name,
                 service.description,

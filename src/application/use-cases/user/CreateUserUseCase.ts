@@ -27,7 +27,7 @@ export class CreateUserUseCase implements IUseCase<CreateUserDTO, User> {
             establishmentId: request.establishmentId
         });
 
-        const savedUser = await this.userRepository.create(user);
+        const savedUser = await this.userRepository.create(user, hashedPassword);
 
         return savedUser
     }

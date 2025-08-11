@@ -60,7 +60,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
             orderBy: { scheduledAt: 'desc' },
         });
 
-        return appointments.map(appointment => new Appointment(
+        return appointments.map((appointment: any) => new Appointment(
             appointment.id,
             appointment.clientId,
             appointment.serviceId,
@@ -99,7 +99,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
             },
         });
 
-        return appointments.map(appointment => new Appointment(
+        return appointments.map((appointment: any) => new Appointment(
             appointment.id,
             appointment.clientId,
             appointment.serviceId,
