@@ -1,7 +1,21 @@
-# Dependencies
-node_modules/
-
-# Environment variables
 .env
 .env.local
 
+node_modules/
+
+dist/
+build/
+
+*.log
+npm-debug.log*
+
+*.db
+*.sqlite
+
+.vscode/
+.DS_Store
+
+coverage/
+
+logs/
+*.log
