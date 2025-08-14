@@ -1,18 +1,3 @@
-/**
- * Hierarquia de Erros do Domínio - Shared Layer
- * 
- * Seguindo Clean Architecture e SOLID:
- * - **Single Responsibility**: Cada classe de erro tem uma responsabilidade específica
- * - **Open/Closed**: Extensível para novos tipos de erro
- * - **Liskov Substitution**: Todas podem ser tratadas como Error
- * 
- * Esta hierarquia permite tratamento específico de diferentes tipos de erro
- * mantendo a flexibilidade e extensibilidade do sistema.
- */
-
-/**
- * Erro base da aplicação
- */
 export abstract class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
@@ -29,9 +14,6 @@ export abstract class AppError extends Error {
   }
 }
 
-/**
- * Erros de validação (400)
- */
 export class ValidationError extends AppError {
   public readonly field?: string;
   public readonly value?: any;
@@ -44,9 +26,6 @@ export class ValidationError extends AppError {
   }
 }
 
-/**
- * Erros de autenticação (401)
- */
 export class AuthenticationError extends AppError {
   constructor(message: string = 'Authentication failed') {
     super(message, 401);
@@ -54,9 +33,6 @@ export class AuthenticationError extends AppError {
   }
 }
 
-/**
- * Erros de autorização (403)
- */
 export class AuthorizationError extends AppError {
   public readonly requiredRole?: string;
   public readonly userRole?: string;
@@ -69,9 +45,6 @@ export class AuthorizationError extends AppError {
   }
 }
 
-/**
- * Erros de recurso não encontrado (404)
- */
 export class NotFoundError extends AppError {
   public readonly resource: string;
   public readonly resourceId?: string;
@@ -88,9 +61,6 @@ export class NotFoundError extends AppError {
   }
 }
 
-/**
- * Erros de conflito/duplicação (409)
- */
 export class ConflictError extends AppError {
   public readonly resource: string;
   public readonly conflictField?: string;
@@ -107,9 +77,6 @@ export class ConflictError extends AppError {
   }
 }
 
-/**
- * Erros de regra de negócio (422)
- */
 export class BusinessRuleError extends AppError {
   public readonly rule: string;
 
@@ -120,9 +87,6 @@ export class BusinessRuleError extends AppError {
   }
 }
 
-/**
- * Erros de limite de taxa (429)
- */
 export class RateLimitError extends AppError {
   public readonly retryAfter?: number;
 
@@ -133,9 +97,6 @@ export class RateLimitError extends AppError {
   }
 }
 
-/**
- * Erros internos do servidor (500)
- */
 export class InternalServerError extends AppError {
   constructor(message: string = 'Internal server error', originalError?: Error) {
     super(message, 500, false);
@@ -147,9 +108,6 @@ export class InternalServerError extends AppError {
   }
 }
 
-/**
- * Erros de serviço externo (502)
- */
 export class ExternalServiceError extends AppError {
   public readonly service: string;
 
@@ -160,9 +118,6 @@ export class ExternalServiceError extends AppError {
   }
 }
 
-/**
- * Erros de timeout (504)
- */
 export class TimeoutError extends AppError {
   public readonly operation: string;
   public readonly timeout: number;
