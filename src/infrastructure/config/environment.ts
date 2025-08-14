@@ -9,7 +9,6 @@ export const env = {
     jwtSecret: process.env.JWT_SECRET,
     jwtExpiration: process.env.JWT_EXPIRATION,
     
-    // Email service
     emailService: {
         host: process.env.EMAIL_HOST,
         port: parseInt(process.env.EMAIL_PORT || '587'),
@@ -17,7 +16,6 @@ export const env = {
         password: process.env.EMAIL_PASSWORD,
     },
 
-    // SMS service
     smsService: {
         accountSid: process.env.TWILIO_ACCOUNT_SID,
         authToken: process.env.TWILIO_AUTH_TOKEN,
