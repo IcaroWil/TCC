@@ -77,7 +77,6 @@ export class DateTime {
         const hour = this.value.getHours();
         const dayOfWeek = this.value.getDay();
         
-        // Segunda a Sexta (1-5), das 8h às 18h
         return dayOfWeek >= 1 && dayOfWeek <= 5 && hour >= 8 && hour < 18;
     }
 

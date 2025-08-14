@@ -18,18 +18,13 @@ export class Phone {
     }
 
     private cleanPhone(phone: string): string {
-        // Remove todos os caracteres não numéricos
         return phone.replace(/\D/g, '');
     }
 
     private isValid(phone: string): boolean {
-        // Valida telefone brasileiro: 11 dígitos (celular) ou 10 dígitos (fixo)
-        // Formato: DDD + número
         if (phone.length === 11) {
-            // Celular: DDD + 9 + 8 dígitos
             return /^[1-9]{2}9[0-9]{8}$/.test(phone);
         } else if (phone.length === 10) {
-            // Fixo: DDD + 8 dígitos
             return /^[1-9]{2}[2-9][0-9]{7}$/.test(phone);
         }
         return false;
@@ -37,10 +32,8 @@ export class Phone {
 
     private formatPhone(phone: string): string {
         if (phone.length === 11) {
-            // Formato: (11) 99999-9999
             return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
         } else {
-            // Formato: (11) 9999-9999
             return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
         }
     }
