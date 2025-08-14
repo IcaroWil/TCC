@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 export class Establishment {
     constructor(
         public readonly id: string,
@@ -24,7 +26,7 @@ export class Establishment {
         zipCode: string;
         cnpj: string;
     }): Establishment {
-        const id = crypto.randomUUID();
+        const id = randomUUID();
         return new Establishment(
             id,
             props.name,
