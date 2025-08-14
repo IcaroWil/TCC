@@ -12,7 +12,7 @@ export class PrismaUserRepository implements IUserRepository {
                 email: user.email,
                 name: user.name,
                 phone: user.phone,
-                role: user.role,
+                role: user.role as any,
                 establishmentId: user.establishmentId,
                 password: hashedPassword,
             },
@@ -91,7 +91,7 @@ export class PrismaUserRepository implements IUserRepository {
             data: {
                 name: user.name,
                 phone: user.phone,
-                role: user.role,
+                role: user.role as any, // Cast para compatibilidade com enum
                 establishmentId: user.establishmentId,
             },
         });

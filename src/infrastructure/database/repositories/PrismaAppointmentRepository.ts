@@ -75,7 +75,17 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     }
 
     async findConflicts(employeeId: string, scheduledAt: Date, duration: number): Promise<Appointment[]> {
+        if (!scheduledAt || isNaN(scheduledAt.getTime())) {
+            console.error('Invalid scheduledAt date:', scheduledAt);
+            return [];
+        }
+
         const endTime = new Date(scheduledAt.getTime() + duration * 60000);
+        
+        if (isNaN(endTime.getTime())) {
+            console.error('Invalid endTime calculated:', endTime);
+            return [];
+        }
 
         const appointments = await this.prisma.appointment.findMany({
             where: {
@@ -86,7 +96,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
                 OR: [
                     {
                         scheduledAt: {
-                            lte: scheduledAt,
+                            lte: endTime,
                         },
                     },
                     {
@@ -113,39 +123,31 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
         ));
     }
 
-    // Implementar outros métodos...
     async findByEmployee(employeeId: string): Promise<Appointment[]> {
-        // Implementação similar ao findByClient
         throw new Error('Method not implemented');
     }
 
     async findByEstablishment(establishmentId: string): Promise<Appointment[]> {
-        // Implementação
         throw new Error('Method not implemented.');
     }
 
     async findByDateRange(establishmentId: string, startDate: Date, endDate: Date): Promise<Appointment[]> {
-        // Implementação
         throw new Error('Method not implemented');
     }
 
     async findByStatus(establishmentId: string, status: AppointmentStatus): Promise<Appointment[]> {
-        // Implementação
         throw new Error('Method not implemented.');
     }
 
     async update(appointment: Appointment): Promise<Appointment> {
-        // Implementação
         throw new Error('Method not implemented.');
     }
     
     async delete(id: string): Promise<void> {
-        // Implementação
         throw new Error('Method not implemented.');
     }
     
     async list(page: number, limit: number): Promise<{appointments: Appointment[], total: number}> {
-        // Implementação
         throw new Error('Method not implemented.');
     }
 }
