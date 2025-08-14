@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { AppError } from "../../shared/errors/AppError";
 
 export type AppointmentStatus = 'SCHEDULED' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
@@ -24,7 +25,7 @@ export class Appointment {
         scheduledAt: Date;
         note?: string;
     }): Appointment {
-        const id = crypto.randomUUID();
+        const id = randomUUID();
         return new Appointment(
             id,
             props.clientId,

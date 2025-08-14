@@ -16,25 +16,21 @@ export class CreateAppointmentUsecase implements IUseCase<CreateAppointmentDTO, 
     ) {}
 
     async execute(request: CreateAppointmentDTO): Promise<AppointmentResponseDTO> {
-        // Validar se o serviço existe
         const service = await this.serviceRepository.findById(request.serviceId);
         if (!service) {
             throw new AppError('Service not found', 404);
         }
 
-        // Validar se o cliente existe
         const employee = await this.userRepository.findById(request.employeeId);
         if (!employee || !employee.isEmployee()) {
             throw new AppError('Employee not found', 404);
         }
         
-        // Validar se o cliente existe 
         const client = await this.userRepository.findById(request.clientId);
         if (!client) {
             throw new AppError('Client not found', 404);
         }
 
-        // Verificar conflitos de horario
         const conflicts = await this.appointmentRepository.findConflicts(
             request.employeeId,
             request.scheduledAt,
@@ -45,13 +41,10 @@ export class CreateAppointmentUsecase implements IUseCase<CreateAppointmentDTO, 
             throw new AppError('Time slot is not available', 409);
         }
 
-        // Criar agendamento
         const appointment = Appointment.create(request);
 
-        // Salva no repositorio
         const savedAppointment = await this.appointmentRepository.create(appointment);
 
-        // Envia notificação
         await this.notificationService.sendAppointmentConfirmation(savedAppointment, client.email);
 
         return {
