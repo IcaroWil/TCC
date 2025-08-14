@@ -28,7 +28,6 @@ export class EmailNotificationService implements INotificationService {
     }
 
     async sendSMS(phone: string, message: string): Promise<void> {
-        // Implementar com Twilio ou outro provedor SMS
         console.log(`SMS to ${phone}: ${message}`);
     }
 
