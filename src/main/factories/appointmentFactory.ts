@@ -1,5 +1,8 @@
 import { CreateAppointmentUsecase } from "../../application/use-cases/appointment/CreateAppointmentUseCase";
 import { ListAppointmentsUseCase } from "../../application/use-cases/appointment/ListAppointmentsUseCase";
+import { GetAppointmentByIdUseCase } from "../../application/use-cases/appointment/GetAppointmentByIdUseCase";
+import { UpdateAppointmentUseCase } from "../../application/use-cases/appointment/UpdateAppointmentUseCase";
+import { DeleteAppointmentUseCase } from "../../application/use-cases/appointment/DeleteAppointmentUseCase";
 import { prisma } from "../../infrastructure/config/database";
 import { PrismaAppointmentRepository } from "../../infrastructure/database/repositories/PrismaAppointmentRepository";
 import { PrismaServiceRepository } from "../../infrastructure/database/repositories/PrismaServiceRepository";
@@ -21,6 +24,15 @@ export const makeAppointmentController = (): AppointmentController => {
     );
 
     const listAppointmentsUseCase = new ListAppointmentsUseCase(appointmentRepository);
+    const getAppointmentByIdUseCase = new GetAppointmentByIdUseCase(appointmentRepository);
+    const updateAppointmentUseCase = new UpdateAppointmentUseCase(appointmentRepository);
+    const deleteAppointmentUseCase = new DeleteAppointmentUseCase(appointmentRepository);
 
-    return new AppointmentController(createAppointmentUseCase, listAppointmentsUseCase);
-}
+    return new AppointmentController(
+        createAppointmentUseCase,
+        listAppointmentsUseCase,
+        getAppointmentByIdUseCase,
+        updateAppointmentUseCase,
+        deleteAppointmentUseCase
+    );
+};

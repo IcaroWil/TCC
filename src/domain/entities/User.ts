@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 export class User {
     constructor(
         public readonly id: string,
@@ -18,7 +20,7 @@ export class User {
         role: 'CLIENT' | 'ADMIN' | 'EMPLOYEE';
         establishmentId?: string;
     }): User {
-        const id = crypto.randomUUID();
+        const id = randomUUID();
         return new User(
             id,
             props.email,
