@@ -479,6 +479,7 @@ export class SwaggerMiddleware {
           margin: 0 !important;
           padding: 0 !important;
         }
+        
       `,
       customSiteTitle: 'SaaS Barbearia - API Documentation',
       customfavIcon: '/favicon.ico',

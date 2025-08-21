@@ -19,51 +19,43 @@ export class LoggingMiddleware {
     return (req: Request, res: Response, next: NextFunction): void => {
       const startTime = Date.now();
       
-      const requestData = {
-        method: req.method,
-        url: req.originalUrl || req.url,
-        userAgent: req.get('User-Agent'),
-        ip: this.getClientIP(req),
-        userId: this.getUserId(req),
-        timestamp: new Date().toISOString()
-      };
-
-      this.loggerService.debug('HTTP Request Started', requestData);
+      // Skip logging for static files and docs
+      if (this.shouldSkipLogging(req.originalUrl || req.url)) {
+        return next();
+      }
 
       const originalSend = res.send;
       const self = this;
       
       res.send = function(body: any) {
         const duration = Date.now() - startTime;
+        const url = req.originalUrl || req.url;
         
-        const logData: RequestLogData = {
-          ...requestData,
-          duration,
-          statusCode: res.statusCode,
-          contentLength: body ? Buffer.byteLength(body, 'utf8') : 0
-        };
-
-        const logLevel = self.getLogLevel(res.statusCode);
-        const message = `${req.method} ${req.originalUrl || req.url} - ${res.statusCode} - ${duration}ms`;
-
-        switch (logLevel) {
-          case 'error':
-            self.loggerService.error(message, logData);
-            break;
-          case 'warn':
-            self.loggerService.warn(message, logData);
-            break;
-          case 'info':
-            self.loggerService.info(message, logData);
-            break;
-          default:
-            self.loggerService.http(message, logData);
+        // Only log errors and important requests
+        if (res.statusCode >= 400) {
+          self.loggerService.warn(`${req.method} ${url} - ${res.statusCode}`, {
+            method: req.method,
+            url,
+            statusCode: res.statusCode,
+            duration,
+            ip: self.getClientIP(req)
+          });
+        } else if (self.isImportantRequest(url)) {
+          self.loggerService.info(`${req.method} ${url} - ${res.statusCode}`, {
+            method: req.method,
+            url,
+            statusCode: res.statusCode,
+            duration
+          });
         }
 
-        if (duration > 1000) {
-          self.loggerService.performance(`HTTP ${req.method} ${req.originalUrl}`, duration, {
-            statusCode: res.statusCode,
-            userId: requestData.userId
+        // Log slow requests
+        if (duration > 2000) {
+          self.loggerService.warn(`Slow request: ${req.method} ${url} - ${duration}ms`, {
+            method: req.method,
+            url,
+            duration,
+            statusCode: res.statusCode
           });
         }
 
@@ -103,35 +95,17 @@ export class LoggingMiddleware {
         
         res.send = function(body: any) {
           const success = res.statusCode < 400;
+          const logLevel = success ? 'info' : 'warn';
           
-          self.loggerService.security('Authentication Attempt', {
-            userId: success ? self.getUserId(req) : undefined,
+          self.loggerService[logLevel](`Security Event: ${req.path.includes('/login') ? 'Login' : 'Registration'} Attempt`, {
+            type: 'SECURITY',
+            event: req.path.includes('/login') ? 'Login Attempt' : 'Registration Attempt',
             ip: self.getClientIP(req),
             userAgent: req.get('User-Agent'),
             action: req.path.includes('/login') ? 'LOGIN' : 'REGISTER',
             success,
-            reason: success ? undefined : 'Invalid credentials'
+            reason: success ? undefined : (req.path.includes('/login') ? 'Invalid credentials' : 'Validation failed')
           });
-
-          return originalSend.call(this, body);
-        };
-      }
-
-      if (req.headers.authorization) {
-        const originalSend = res.send;
-        const self = this;
-        
-        res.send = function(body: any) {
-          if (res.statusCode === 401 || res.statusCode === 403) {
-            self.loggerService.security('Unauthorized Access Attempt', {
-              userId: self.getUserId(req),
-              ip: self.getClientIP(req),
-              userAgent: req.get('User-Agent'),
-              action: `${req.method} ${req.originalUrl}`,
-              success: false,
-              reason: res.statusCode === 401 ? 'Invalid token' : 'Insufficient permissions'
-            });
-          }
 
           return originalSend.call(this, body);
         };
@@ -139,6 +113,32 @@ export class LoggingMiddleware {
 
       next();
     };
+  }
+
+  private shouldSkipLogging(url: string): boolean {
+    const skipPaths = [
+      '/docs',
+      '/favicon.ico',
+      '/health',
+      '.css',
+      '.js',
+      '.png',
+      '.jpg',
+      '.ico',
+      '/swagger'
+    ];
+    
+    return skipPaths.some(path => url.includes(path));
+  }
+
+  private isImportantRequest(url: string): boolean {
+    const importantPaths = [
+      '/api/users/login',
+      '/api/users/register',
+      '/api/users/profile'
+    ];
+    
+    return importantPaths.some(path => url.includes(path));
   }
 
   private getClientIP(req: Request): string {

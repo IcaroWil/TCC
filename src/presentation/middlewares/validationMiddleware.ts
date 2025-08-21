@@ -6,8 +6,7 @@ export const handleValidationErrors = (req: Request, res: Response, next: NextFu
     if (!errors.isEmpty()) {
         return res.status(400).json({
             success: false,
-            error: 'Validation failed',
-            details: errors.array()
+            error: 'Dados inválidos'
         });
     }
     next();
