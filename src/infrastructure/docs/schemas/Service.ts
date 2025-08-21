@@ -101,25 +101,4 @@
  *         - price
  *         - establishmentId
  * 
- *     ServiceResponse:
- *       type: object
- *       description: Resposta padrão com dados do serviço
- *       properties:
- *         success:
- *           type: boolean
- *           example: true
- *         data:
- *           $ref: '#/components/schemas/Service'
- * 
- *     ServiceListResponse:
- *       type: object
- *       description: Resposta com lista de serviços
- *       properties:
- *         success:
- *           type: boolean
- *           example: true
- *         data:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Service'
  */

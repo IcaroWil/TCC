@@ -49,80 +49,6 @@ const options: swaggerJsdoc.Options = {
           description: 'Token JWT obtido através do endpoint de login'
         }
       },
-      responses: {
-        UnauthorizedError: {
-          description: 'Token de acesso ausente ou inválido',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: {
-                    type: 'boolean',
-                    example: false
-                  },
-                  error: {
-                    type: 'string',
-                    example: 'Token não fornecido'
-                  }
-                }
-              }
-            }
-          }
-        },
-        ValidationError: {
-          description: 'Erro de validação dos dados enviados',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: {
-                    type: 'boolean',
-                    example: false
-                  },
-                  errors: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        field: {
-                          type: 'string',
-                          example: 'email'
-                        },
-                        message: {
-                          type: 'string',
-                          example: 'Email deve ter um formato válido'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        InternalServerError: {
-          description: 'Erro interno do servidor',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: {
-                    type: 'boolean',
-                    example: false
-                  },
-                  error: {
-                    type: 'string',
-                    example: 'Internal server error'
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     },
     tags: [
       {
@@ -130,25 +56,25 @@ const options: swaggerJsdoc.Options = {
         description: 'Endpoints de verificação de saúde do sistema'
       },
       {
-        name: 'Users',
-        description: 'Gerenciamento de usuários (clientes, funcionários, administradores)'
+        name: 'Admin',
+        description: 'Endpoints exclusivos para administradores - CRUD completo de estabelecimentos, serviços e funcionários'
       },
       {
-        name: 'Appointments',
-        description: 'Gerenciamento de agendamentos'
+        name: 'Employee',
+        description: 'Endpoints para funcionários - Acesso somente leitura aos dados do estabelecimento'
       },
       {
-        name: 'Services',
-        description: 'Gerenciamento de serviços oferecidos'
+        name: 'Client',
+        description: 'Endpoints para clientes - Visualizar estabelecimentos, serviços e gerenciar agendamentos'
       },
       {
-        name: 'Establishments',
-        description: 'Gerenciamento de estabelecimentos (barbearias)'
+        name: 'Auth',
+        description: 'Autenticação e autorização - Login, registro e gerenciamento de tokens'
       }
     ]
   },
   apis: [
-    './src/presentation/routes/*.ts',
+    './src/presentation/routes/**/*.ts',
     './src/infrastructure/docs/schemas/*.ts',
     './src/infrastructure/docs/paths/*.ts'
   ]

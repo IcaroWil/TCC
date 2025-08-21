@@ -2,70 +2,6 @@
  * @swagger
  * components:
  *   schemas:
- *     SuccessResponse:
- *       type: object
- *       description: Resposta padrão de sucesso
- *       properties:
- *         success:
- *           type: boolean
- *           example: true
- *         data:
- *           type: object
- *           description: Dados específicos da resposta
- * 
- *     ErrorResponse:
- *       type: object
- *       description: Resposta padrão de erro
- *       properties:
- *         success:
- *           type: boolean
- *           example: false
- *         error:
- *           type: string
- *           description: Mensagem de erro
- *           example: "Recurso não encontrado"
- * 
- *     ValidationErrorResponse:
- *       type: object
- *       description: Resposta de erro de validação
- *       properties:
- *         success:
- *           type: boolean
- *           example: false
- *         errors:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               field:
- *                 type: string
- *                 description: Campo que falhou na validação
- *                 example: "email"
- *               message:
- *                 type: string
- *                 description: Mensagem de erro específica
- *                 example: "Email deve ter um formato válido"
- *               value:
- *                 type: string
- *                 description: Valor que foi enviado
- *                 example: "email-invalido"
- * 
- *     HealthResponse:
- *       type: object
- *       description: Resposta do health check
- *       properties:
- *         status:
- *           type: string
- *           example: "OK"
- *         timestamp:
- *           type: string
- *           format: date-time
- *           example: "2024-01-15T10:30:00Z"
- *         uptime:
- *           type: number
- *           description: Tempo de atividade do servidor em segundos
- *           example: 3600.5
- * 
  *     PaginationQuery:
  *       type: object
  *       description: Parâmetros de paginação
@@ -83,36 +19,6 @@
  *           description: Quantidade de itens por página
  *           example: 10
  *           default: 10
- * 
- *     PaginatedResponse:
- *       type: object
- *       description: Resposta paginada genérica
- *       properties:
- *         success:
- *           type: boolean
- *           example: true
- *         data:
- *           type: object
- *           properties:
- *             items:
- *               type: array
- *               description: Lista de itens da página atual
- *             total:
- *               type: integer
- *               description: Total de itens disponíveis
- *               example: 150
- *             page:
- *               type: integer
- *               description: Página atual
- *               example: 1
- *             limit:
- *               type: integer
- *               description: Limite de itens por página
- *               example: 10
- *             totalPages:
- *               type: integer
- *               description: Total de páginas disponíveis
- *               example: 15
  * 
  *     UUID:
  *       type: string
