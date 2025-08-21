@@ -9,15 +9,11 @@ import { connectDatabase } from '../infrastructure/config/database';
 import { env } from '../infrastructure/config/environment';
 import { SwaggerMiddleware } from '../presentation/middlewares/swaggerMiddleware';
 
-import { createUserRoutes } from '../presentation/routes/userRoutes';
-import { createAppointmentRoutes } from '../presentation/routes/appointmentRoutes';
-import { createServiceRoutes } from '../presentation/routes/serviceRoutes';
-import { createEstablishmentRoutes } from '../presentation/routes/establishmentRoutes';
+import { adminRouter } from '../presentation/routes/admin/adminRoutes';
+import { employeeRouter } from '../presentation/routes/employee/employeeRoutes';
+import { clientRouter } from '../presentation/routes/client/clientRoutes';
+import { authRouter } from '../presentation/routes/auth/authRoutes';
 
-import { makeUserController, makeAuthMiddleware } from './factories/userFactory';
-import { makeAppointmentController } from './factories/appointmentFactory';
-import { makeServiceController } from './factories/serviceFactory';
-import { makeEstablishmentController } from './factories/establishmentFactory';
 import {
     makeLoggerService,
     makeLoggingMiddleware,
@@ -42,8 +38,8 @@ app.use(cors({
 }));
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // máximo 100 requests por IP
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     message: 'Too many requests from this IP, please try again later.',
     handler: (req, res) => {
         loggerService.warn('Rate limit exceeded', {
@@ -91,22 +87,12 @@ app.get('/health', (req, res) => {
     res.status(200).json(healthData);
 });
 
-const setupRoutes = () => {
-    const userController = makeUserController();
-    const appointmentController = makeAppointmentController();
-    const serviceController = makeServiceController();
-    const establishmentController = makeEstablishmentController();
-    const authMiddleware = makeAuthMiddleware();
-
-    app.use('/api/users', createUserRoutes(userController, authMiddleware));
-    app.use('/api/appointments', createAppointmentRoutes(appointmentController, authMiddleware));
-    app.use('/api/services', createServiceRoutes(serviceController, authMiddleware));
-    app.use('/api/establishments', createEstablishmentRoutes(establishmentController, authMiddleware));
-};
-
 SwaggerMiddleware.setup(app);
 
-setupRoutes();
+app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/employee', employeeRouter);
+app.use('/api/client', clientRouter);
 
 app.use(loggingMiddleware.logErrors());
 app.use(makeErrorHandler());
@@ -198,4 +184,4 @@ const startServer = async () => {
 
 startServer();
 
-  export default app;
+export default app;
