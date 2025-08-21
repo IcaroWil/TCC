@@ -25,25 +25,66 @@ model User {
     @@map("users")
 }
 
-model Establishment {
-    id         String   @id @default(uuid())
-    name       String
-    email      String   @unique
-    phone      String
-    address    String
-    city       String
-    state      String
-    zipCode    String   @map("zip_code")
-    cnpj       String   @unique
-    isActive   Boolean  @default(true) @map("is_active")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
+model BusinessCategory {
+    id              String                @id @default(uuid())
+    name            String
+    type            BusinessCategoryType
+    description     String
+    subcategories   String[]
+    defaultSettings Json                  @map("default_settings")
+    isActive        Boolean               @default(true) @map("is_active")
+    createdAt       DateTime              @default(now()) @map("created_at")
+    updatedAt       DateTime              @updatedAt @map("updated_at")
 
-    users        User[]
-    services     Service[]
-    appointments Appointment[]
+    establishments  Establishment[]
+
+    @@map("business_categories")
+}
+
+model Establishment {
+    id                  String              @id @default(uuid())
+    name                String
+    email               String              @unique
+    phone               String
+    address             String
+    city                String
+    state               String
+    zipCode             String              @map("zip_code")
+    businessCategoryId  String              @map("business_category_id")
+    subcategory         String
+    businessType        BusinessType        @map("business_type")
+    document            String              @unique
+    description         String?
+    website             String?
+    socialMedia         Json?               @map("social_media")
+    isActive            Boolean             @default(true) @map("is_active")
+    createdAt           DateTime            @default(now()) @map("created_at")
+    updatedAt           DateTime            @updatedAt @map("updated_at")
+
+    businessCategory    BusinessCategory    @relation(fields: [businessCategoryId], references: [id])
+    settings            EstablishmentSettings?
+    users               User[]
+    services            Service[]
+    appointments        Appointment[]
 
     @@map("establishments")
+}
+
+model EstablishmentSettings {
+    id                    String        @id @default(uuid())
+    establishmentId       String        @unique @map("establishment_id")
+    workingHours          Json          @map("working_hours")
+    appointmentSettings   Json          @map("appointment_settings")
+    paymentSettings       Json          @map("payment_settings")
+    notificationSettings  Json          @map("notification_settings")
+    customFields          Json          @map("custom_fields")
+    integrations          Json
+    createdAt             DateTime      @default(now()) @map("created_at")
+    updatedAt             DateTime      @updatedAt @map("updated_at")
+
+    establishment         Establishment @relation(fields: [establishmentId], references: [id])
+
+    @@map("establishment_settings")
 }
 
 model Service {
@@ -95,4 +136,17 @@ enum AppointmentStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum BusinessCategoryType {
+  BEAUTY_AESTHETICS
+  HEALTH_WELLNESS
+  PROFESSIONAL_SERVICES
+  EDUCATION_TRAINING
+  OTHER
+}
+
+enum BusinessType {
+  INDIVIDUAL
+  COMPANY
 }

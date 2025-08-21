@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { IEstablishmentRepository } from "../../../domain/repositories/IEstablishmentRepository";
 import { Establishment } from '../../../domain/entities/Establishment';
+import { BusinessCategoryType } from '../../../domain/entities/BusinessCategory';
+import { SocialMediaLinks } from '../../../domain/value-objects/SocialMediaLinks';
 
 export class PrismaEstablishmentRepository implements IEstablishmentRepository {
     constructor(private readonly prisma: PrismaClient) {}
@@ -16,94 +18,78 @@ export class PrismaEstablishmentRepository implements IEstablishmentRepository {
                 city: establishment.city,
                 state: establishment.state,
                 zipCode: establishment.zipCode,
-                cnpj: establishment.cnpj,
+                businessCategoryId: establishment.businessCategoryId,
+                subcategory: establishment.subcategory,
+                businessType: establishment.businessType,
+                document: establishment.document,
+                description: establishment.description,
+                website: establishment.website,
+                socialMedia: establishment.socialMedia?.toJSON(),
                 isActive: establishment.isActive,
             },
         });
 
-        return new Establishment(
-            created.id,
-            created.name,
-            created.email,
-            created.phone,
-            created.address,
-            created.city,
-            created.state,
-            created.zipCode,
-            created.cnpj,
-            created.isActive,
-            created.createdAt,
-            created.updatedAt
-        );
+        return this.toDomain(created);
     }
 
     async findById(id: string): Promise<Establishment | null> {
         const establishment = await this.prisma.establishment.findUnique({
             where: { id },
+            include: { businessCategory: true }
         });
 
-        if (!establishment) return null;
-
-        return new Establishment(
-            establishment.id,
-            establishment.name,
-            establishment.email,
-            establishment.phone,
-            establishment.address,
-            establishment.city,
-            establishment.state,
-            establishment.zipCode,
-            establishment.cnpj,
-            establishment.isActive,
-            establishment.createdAt,
-            establishment.updatedAt
-        );
+        return establishment ? this.toDomain(establishment) : null;
     }
 
     async findByEmail(email: string): Promise<Establishment | null> {
         const establishment = await this.prisma.establishment.findUnique({
             where: { email },
+            include: { businessCategory: true }
         });
 
-        if (!establishment) return null;
-
-        return new Establishment(
-            establishment.id,
-            establishment.name,
-            establishment.email,
-            establishment.phone,
-            establishment.address,
-            establishment.city,
-            establishment.state,
-            establishment.zipCode,
-            establishment.cnpj,
-            establishment.isActive,
-            establishment.createdAt,
-            establishment.updatedAt
-        );
+        return establishment ? this.toDomain(establishment) : null;
     }
 
     async findByCnpj(cnpj: string): Promise<Establishment | null> {
-        const establishment = await this.prisma.establishment.findUnique({
-            where: { cnpj },
+        const establishment = await this.prisma.establishment.findFirst({
+            where: { document: cnpj },
+            include: { businessCategory: true }
         });
 
-        if (!establishment) return null;
+        return establishment ? this.toDomain(establishment) : null;
+    }
 
-        return new Establishment(
-            establishment.id,
-            establishment.name,
-            establishment.email,
-            establishment.phone,
-            establishment.address,
-            establishment.city,
-            establishment.state,
-            establishment.zipCode,
-            establishment.cnpj,
-            establishment.isActive,
-            establishment.createdAt,
-            establishment.updatedAt
-        );
+    async findByDocument(document: string): Promise<Establishment | null> {
+        const establishment = await this.prisma.establishment.findUnique({
+            where: { document },
+            include: { businessCategory: true }
+        });
+
+        return establishment ? this.toDomain(establishment) : null;
+    }
+
+    async findByCategory(categoryId: string): Promise<Establishment[]> {
+        const establishments = await this.prisma.establishment.findMany({
+            where: { businessCategoryId: categoryId },
+            include: { businessCategory: true },
+            orderBy: { name: 'asc' }
+        });
+
+        return establishments.map(this.toDomain);
+    }
+
+    async findByCategoryType(categoryType: BusinessCategoryType): Promise<Establishment[]> {
+        const establishments = await this.prisma.establishment.findMany({
+            where: {
+                businessCategory: {
+                    type: categoryType
+                }
+            },
+            include: { businessCategory: true },
+            orderBy: { name: 'asc' }
+        });
+
+        return establishments.map(this.toDomain);
     }
 
     async update(establishment: Establishment): Promise<Establishment> {
@@ -117,25 +103,19 @@ export class PrismaEstablishmentRepository implements IEstablishmentRepository {
                 city: establishment.city,
                 state: establishment.state,
                 zipCode: establishment.zipCode,
-                cnpj: establishment.cnpj,
+                businessCategoryId: establishment.businessCategoryId,
+                subcategory: establishment.subcategory,
+                businessType: establishment.businessType,
+                document: establishment.document,
+                description: establishment.description,
+                website: establishment.website,
+                socialMedia: establishment.socialMedia?.toJSON(),
                 isActive: establishment.isActive,
             },
+            include: { businessCategory: true }
         });
 
-        return new Establishment(
-            updated.id,
-            updated.name,
-            updated.email,
-            updated.phone,
-            updated.address,
-            updated.city,
-            updated.state,
-            updated.zipCode,
-            updated.cnpj,
-            updated.isActive,
-            updated.createdAt,
-            updated.updatedAt
-        );
+        return this.toDomain(updated);
     }
 
     async delete(id: string): Promise<void> {
@@ -149,26 +129,14 @@ export class PrismaEstablishmentRepository implements IEstablishmentRepository {
             this.prisma.establishment.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
+                include: { businessCategory: true },
                 orderBy: { createdAt: 'desc' },
             }),
             this.prisma.establishment.count(),
         ]);
 
         return {
-            establishment: establishments.map((establishment: any) => new Establishment(
-                establishment.id,
-                establishment.name,
-                establishment.email,
-                establishment.phone,
-                establishment.address,
-                establishment.city,
-                establishment.state,
-                establishment.zipCode,
-                establishment.cnpj,
-                establishment.isActive,
-                establishment.createdAt,
-                establishment.updatedAt
-            )),
+            establishment: establishments.map(this.toDomain),
             total,
         };
     }
@@ -176,22 +144,37 @@ export class PrismaEstablishmentRepository implements IEstablishmentRepository {
     async findActive(): Promise<Establishment[]> {
         const establishments = await this.prisma.establishment.findMany({
             where: { isActive: true },
+            include: { businessCategory: true },
             orderBy: { name: 'asc' },
         });
 
-        return establishments.map((establishment: any) => new Establishment(
-            establishment.id,
-            establishment.name,
-            establishment.email,
-            establishment.phone,
-            establishment.address,
-            establishment.city,
-            establishment.state,
-            establishment.zipCode,
-            establishment.cnpj,
-            establishment.isActive,
-            establishment.createdAt,
-            establishment.updatedAt
-        ));
+        return establishments.map(this.toDomain);
+    }
+
+    private toDomain(data: any): Establishment {
+        const socialMedia = data.socialMedia ? 
+            SocialMediaLinks.fromJSON(data.socialMedia) : 
+            undefined;
+
+        return new Establishment(
+            data.id,
+            data.name,
+            data.email,
+            data.phone,
+            data.address,
+            data.city,
+            data.state,
+            data.zipCode,
+            data.businessCategoryId,
+            data.subcategory,
+            data.businessType,
+            data.document,
+            data.description,
+            data.website,
+            socialMedia,
+            data.isActive,
+            data.createdAt,
+            data.updatedAt
+        );
     }
 }
